@@ -2,6 +2,8 @@ import os
 import cv2
 import numpy as np
 
+import torch
+
 
 def plot_reconstructed(
         in_data,
@@ -46,3 +48,37 @@ def plot_reconstructed(
             [int(cv2.IMWRITE_JPEG_QUALITY), 100])
     except Exception as e:
         print(f"An error occured while plotting reconstructed image. {e}")
+
+
+def save_model(model_net, file_name, dest_path, checkpoint=False, steps=0):
+    try:
+        if checkpoint:
+            f_path = os.path.join(dest_path, "checkpoint")
+        else:
+            f_path = os.path.join(dest_path, "models")
+        
+        os.makedirs(f_path, exist_ok=True)
+
+        model_name = f"{file_name}_{str(steps)}.pt"
+        torch.save(
+            model_net,
+            os.path.join(f_path, model_name))
+        return True
+    except Exception as e:
+        print(f"Exception occured while saving cvae model: {e}.")
+        return False
+
+def load_checkpoint(model, optimizer, checkpoint_path):
+    if os.path.exists(checkpoint_path):
+        print(f"Loading checkpoint: {checkpoint_path}")
+        checkpoint = torch.load(checkpoint_path)
+
+        k = checkpoint["k"]
+        epoch = checkpoint["epoch"]
+        global_steps = checkpoint["global_steps"]
+        cur_lr = checkpoint["cur_lr"]
+        model.load_state_dict(checkpoint["model"])
+        optimizer.load_state_dict(checkpoint["optimizer"])
+    else:
+        print("No checkpoint found.")
+    return model, optimizer, epoch, global_steps, cur_lr, k
