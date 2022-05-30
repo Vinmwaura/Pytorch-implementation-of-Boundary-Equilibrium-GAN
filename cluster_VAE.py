@@ -11,7 +11,7 @@ class cluster_VAE(nn.Module):
         super(cluster_VAE, self).__init__()
 
         self.encoder = Encoder(img_dim=img_dim, device=device)
-        self.decoder = Decoder(img_dim=img_dim, device=device)
+        self.decoder = Decoder(img_dim=img_dim)
 
     def forward(self, in_data):
         z, mu, sigma = self.encoder(in_data)
