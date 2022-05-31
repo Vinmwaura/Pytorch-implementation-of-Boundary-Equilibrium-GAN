@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import glob
+import random
 import logging
 
 import torch
@@ -32,8 +33,8 @@ def main():
     batch_size = 64
     dataset_path = ""
     out_dir = ""
-    cvae_checkpoint = ""
-    gen_checkpoint = ""
+    cvae_checkpoint = None
+    gen_checkpoint = None
 
     log_path = os.path.join(out_dir, f"img_{img_dim}.log")
     logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
@@ -144,15 +145,28 @@ def main():
                 cvae_optim.zero_grad()
                 # Real Images Reconstruction.
                 x_hat_real, z_real, mu_real, sigma_real = cvae_net(tr_data)
+
+                max_positive = torch.ones_like(x_hat_real).to(device)
+                max_negative = torch.ones_like(x_hat_real).to(device) * -1
+                
+                noise_real = torch.randn_like(x_hat_real).to(device) * (0.1**0.5)
+
+                noise_x_hat_real = x_hat_real + noise_real
+                noise_x_hat_real = torch.maximum(torch.minimum(max_positive, noise_x_hat_real), max_negative)
                 recon_loss_real = F.mse_loss(
-                    x_hat_real,
+                    noise_x_hat_real,
                     tr_data,
                     reduction="sum")
 
                 # Generated Images Reconstruction.
                 x_hat_fake, z_fake, mu_fake, sigma_fake = cvae_net(fake_imgs)
+                
+                noise_fake = torch.randn_like(x_hat_fake).to(device) * (0.1**0.5)
+                noise_x_hat_fake = x_hat_fake + noise_fake
+                noise_x_hat_fake = torch.maximum(torch.minimum(max_positive, noise_x_hat_fake), max_negative)
+                
                 recon_loss_fake = F.mse_loss(
-                    x_hat_fake,
+                    noise_x_hat_fake,
                     fake_imgs,
                     reduction="sum")
 

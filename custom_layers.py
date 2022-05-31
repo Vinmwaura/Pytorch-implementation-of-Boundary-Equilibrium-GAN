@@ -22,6 +22,7 @@ class ConvBlock(nn.Module):
                 stride=1,
                 padding=1),
             nn.ELU(inplace=True),
+            nn.BatchNorm2d(hidden_channel),
 
             nn.Conv2d(
                 in_channels=hidden_channel,
@@ -30,6 +31,7 @@ class ConvBlock(nn.Module):
                 stride=1,
                 padding=1),
             nn.ELU(inplace=True),
+            nn.BatchNorm2d(out_channel)
         )
 
     def forward(self, in_data):
@@ -49,6 +51,7 @@ class ConvBlock_toRGB(nn.Module):
                 stride=1,
                 padding=1),
             nn.ELU(inplace=True),
+            nn.BatchNorm2d(hidden_channel),
 
             nn.Conv2d(
                 in_channels=hidden_channel,
