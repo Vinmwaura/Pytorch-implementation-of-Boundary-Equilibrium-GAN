@@ -36,6 +36,8 @@ def main():
     cvae_checkpoint = None
     gen_checkpoint = None
 
+    os.makedirs(out_dir, exist_ok=True)
+
     log_path = os.path.join(out_dir, f"img_{img_dim}.log")
     logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
 
