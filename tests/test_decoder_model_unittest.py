@@ -6,7 +6,7 @@ from decoder import Decoder
 
 class TestDecoderModel(unittest.TestCase):
     def setUp(self):
-        self.z = torch.rand((1, 100))
+        self.z = torch.rand((1, 512))
         self.min_dim = 4
         self.max_dim = 1024
 
