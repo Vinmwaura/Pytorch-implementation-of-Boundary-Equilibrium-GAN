@@ -12,8 +12,12 @@ class Discriminator(nn.Module):
 
         self.encoder = Encoder(img_dim=img_dim)
         self.decoder = Decoder(img_dim=img_dim)
+    
+    def freeze_layers(self):
+        self.encoder.freeze_layers()
+        self.decoder.freeze_layers()
 
-    def forward(self, in_data):
-        z = self.encoder(in_data)
-        recon = self.decoder(z)
+    def forward(self, in_data, carry=0):
+        z = self.encoder(in_data, carry)
+        recon = self.decoder(z, carry)
         return recon, z

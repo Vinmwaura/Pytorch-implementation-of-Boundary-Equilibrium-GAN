@@ -1,21 +1,32 @@
 import glob
 import cv2
-import numpy as np
-import torch
 import random
+import numpy as np
+
+import torch
+
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 
 
+from custom_transforms import *
+
 class CustomDataset(Dataset):
-    def __init__(self, img_list, prob=0.0, transform=False):
+    def __init__(self, img_list, prob=0.0, transform=False, device="cpu"):
         self.img_list = img_list
         self.transform = transform
         self.transformations = torchvision.transforms.RandomApply(
             torch.nn.ModuleList([
                 torchvision.transforms.ColorJitter(),
+                torchvision.transforms.GaussianBlur(
+                    kernel_size=5,
+                    sigma=(0.1, 2.0)),
+                torchvision.transforms.RandomInvert(p=0.5),
+                torchvision.transforms.RandomSolarize(threshold=0.75, p=0.5),
+                torchvision.transforms.RandomAdjustSharpness(sharpness_factor=20, p=0.5),
+                AddGaussianNoise(device, mean=0., std=0.3),
                 torchvision.transforms.RandomErasing(
-                    p=prob,
+                    p=0.5,
                     scale=(0.02, 0.33),
                     ratio=(0.3, 3.3),
                     value=0,
@@ -33,7 +44,7 @@ class CustomDataset(Dataset):
         img = (img.astype(float) - 127.5) / 127.5
         img_tensor = torch.from_numpy(img).float().permute(2, 0, 1)
         if self.transform:
-            img_tensor = self.transformations(img_tensor)
-
-        return img_tensor
-
+            img_transformer = self.transformations(img_tensor)
+            return img_transformer
+        else:
+            return img_tensor

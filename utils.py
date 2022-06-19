@@ -1,3 +1,4 @@
+from ast import Try
 import os
 import cv2
 import numpy as np
@@ -68,17 +69,14 @@ def save_model(model_net, file_name, dest_path, checkpoint=False, steps=0):
         print(f"Exception occured while saving cvae model: {e}.")
         return False
 
-def load_checkpoint(model, optimizer, checkpoint_path):
+def load_checkpoint(checkpoint_path):
     if os.path.exists(checkpoint_path):
         print(f"Loading checkpoint: {checkpoint_path}")
-        checkpoint = torch.load(checkpoint_path)
-
-        k = checkpoint["k"]
-        epoch = checkpoint["epoch"]
-        global_steps = checkpoint["global_steps"]
-        cur_lr = checkpoint["cur_lr"]
-        model.load_state_dict(checkpoint["model"])
-        optimizer.load_state_dict(checkpoint["optimizer"])
+        try:
+            checkpoint = torch.load(checkpoint_path)
+            return True, checkpoint
+        except Exception as e:
+            return False, None
     else:
-        print("No checkpoint found.")
-    return model, optimizer, epoch, global_steps, cur_lr, k
+        print(f"Checkpoint does not exist.")
+        return False, None

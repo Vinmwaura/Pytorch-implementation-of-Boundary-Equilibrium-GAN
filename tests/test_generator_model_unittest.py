@@ -6,8 +6,8 @@ from generator import Generator
 
 class TestGeneratorModel(unittest.TestCase):
     def setUp(self):
-        self.z = torch.rand((1, 100))
-        self.min_dim = 4
+        self.z = torch.rand((1, 128))
+        self.min_dim = 8
         self.max_dim = 1024
 
     def test_generate_valid_img_dim(self):

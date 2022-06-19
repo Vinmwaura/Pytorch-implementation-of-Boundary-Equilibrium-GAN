@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class Reshape(nn.Module):
     def __init__(self, *args):
         super(Reshape, self).__init__()
@@ -22,7 +23,6 @@ class ConvBlock(nn.Module):
                 stride=1,
                 padding=1),
             nn.ELU(inplace=True),
-            nn.BatchNorm2d(hidden_channel),
 
             nn.Conv2d(
                 in_channels=hidden_channel,
