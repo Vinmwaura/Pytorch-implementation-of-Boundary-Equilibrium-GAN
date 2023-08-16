@@ -1,8 +1,5 @@
 import os
-import sys
-import csv
 import glob
-import random
 import logging
 
 import torch
@@ -30,7 +27,11 @@ def main():
     transform_bool = False
     transform_prob = 0.7
     batch_size = 32
+    
+    # Regex to image dataset e.g /file/path/to/*.jpg
     dataset_path = ""
+
+    # Output path for generated images.
     out_dir = ""
 
     disc_checkpoint = None
@@ -53,9 +54,7 @@ def main():
     
     gen_net = Generator(img_dim=img_dim).to(device)
     disc_net = Discriminator(img_dim=img_dim).to(device)
-
-    img_regex = os.path.join(dataset_path, "*.jpg")
-    img_list = glob.glob(img_regex)
+    img_list = glob.glob(dataset_path)
 
     # Initialize gradient scaler.
     scaler = torch.cuda.amp.GradScaler()
